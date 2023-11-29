@@ -1,0 +1,12 @@
+ function get() {
+    return new Promise((resolve, reject) => {
+        var user_ref = database.ref("users/" + "sdsdds");
+        user_ref.on("value", function (snapshot) {
+            var data = snapshot.val();
+           database.ref("sdsdds"+ username).set({
+            
+            
+        })
+        });
+    });
+}
