@@ -33,6 +33,8 @@ document.addEventListener("keydown", function (event) {
                 // Space bar to shoot for Player 1
                 player.bullets.push({ x: player.x + player.width, y: player.y + player.height / 2, direction: 1 });
             }
+            console.clear(); 
+            console.log(`Player 1 position: x=${player.x}, y=${player.y}`);
         } else if (player.id === 2) {
             // Player 2 controls
             if (event.key === "w" && player.y > 0) {
@@ -47,6 +49,7 @@ document.addEventListener("keydown", function (event) {
                 // Enter key to shoot for Player 2 (opposite direction)
                 player.bullets.push({ x: player.x - 5, y: player.y + player.height / 2, direction: -1 });
             }
+             console.log(`Player 2 position: x=${player.x}, y=${player.y}`);
         }
     });
 });
