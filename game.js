@@ -1,8 +1,38 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+var firebaseConfig = {
+    apiKey: "AIzaSyBzjcMqWZGbxv6BnXNAkJJtwYCezvDKU7I",
+    authDomain: "stone-58408.firebaseapp.com",
+    databaseURL: "https://stone-58408-default-rtdb.firebaseio.com",
+    projectId: "stone-58408",
+    storageBucket: "stone-58408.appspot.com",
+    messagingSenderId: "34073462745",
+    appId: "1:34073462745:web:ae8015931df3e5b6c7fbc8",
+    measurementId: "G-491Y00XCN5"
+  };
+  
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  
+  // Set database variable
+  var database = firebase.database();
+  function get() {
+    
+  
+    var user_ref = database.ref("users/" + "sdsdds");
+    user_ref.on("value", function (snapshot) {
+      var data = snapshot.val();
+  
+      alert(data.email);
+      alert(data.password)
+      
+    });
+   
+  }
+
 const players = [
-    { id: 1, x: 50, y: canvas.height / 2, width: 30, height: 30, color: "blue", speed: 5, bulletSpeed: 10, bullets: [] },
+    { id: 1, x: 4, y: 5, width: 30, height: 30, color: "blue", speed: 5, bulletSpeed: 10, bullets: [] },
     { id: 2, x: canvas.width - 80, y: canvas.height / 2, width: 30, height: 30, color: "red", speed: 5, bulletSpeed: 10, bullets: [] },
 ];
 
@@ -23,6 +53,7 @@ document.addEventListener("keydown", function (event) {
             // Player 1 controls
             if (event.key === "ArrowUp" && player.y > 0) {
                 player.y -= player.speed;
+                get()
             } else if (event.key === "ArrowDown" && player.y < canvas.height - player.height) {
                 player.y += player.speed;
             } else if (event.key === "ArrowLeft" && player.x > 0) {
