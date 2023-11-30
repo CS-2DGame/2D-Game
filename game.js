@@ -17,23 +17,43 @@ var firebaseConfig = {
   
   // Set database variable
   var database = firebase.database();
-  function get() {
-    
-  
-    var user_ref = database.ref("users/" + "sdsdds");
-    user_ref.on("value", function (snapshot) {
-      var data = snapshot.val();
-  
-      alert(data.email);
-      alert(data.password)
-      
+
+  function saveToFirebase(player) {
+    return new Promise((resolve, reject) => {
+        // Assuming each player has a unique ID
+        var playerRef = database.ref("players/" + player.id);
+
+        playerRef.set({ x: player.x, y: player.y }, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve("Player data saved to Firebase successfully!");
+            }
+        });
     });
-   
-  }
+}
+
+function save() {
+    const savePromises = players.map(player => saveToFirebase(player));
+
+
+}
+
+function get() {
+    var playerRef = database.ref("players");
+
+    playerRef.on("value", function (snapshot) {
+        var playersData = snapshot.val();
+        console.log(playersData);
+        // Handle the retrieved player data as needed
+    });
+}
+
+ 
 
 const players = [
     { id: 1, x: 4, y: 5, width: 30, height: 30, color: "blue", speed: 5, bulletSpeed: 10, bullets: [] },
-    { id: 2, x: canvas.width - 80, y: canvas.height / 2, width: 30, height: 30, color: "red", speed: 5, bulletSpeed: 10, bullets: [] },
+    { id: 2, x: 695, y: 465, width: 30, height: 30, color: "red", speed: 5, bulletSpeed: 10, bullets: [] },
 ];
 
 const obstacles = [
@@ -46,43 +66,63 @@ const obstacles = [
 ];
 
 let gameActive = true;
-
 document.addEventListener("keydown", function (event) {
+    let positionChanged = false;
+
     players.forEach(player => {
         if (player.id === 1) {
             // Player 1 controls
             if (event.key === "ArrowUp" && player.y > 0) {
                 player.y -= player.speed;
-                get()
+                positionChanged = true;
             } else if (event.key === "ArrowDown" && player.y < canvas.height - player.height) {
                 player.y += player.speed;
+                positionChanged = true;
             } else if (event.key === "ArrowLeft" && player.x > 0) {
                 player.x -= player.speed;
+                positionChanged = true;
             } else if (event.key === "ArrowRight" && player.x < canvas.width - player.width) {
                 player.x += player.speed;
+                positionChanged = true;
             } else if (event.key === " " && gameActive) {
                 // Space bar to shoot for Player 1
                 player.bullets.push({ x: player.x + player.width, y: player.y + player.height / 2, direction: 1 });
             }
+            
             console.clear(); 
             console.log(`Player 1 position: x=${player.x}, y=${player.y}`);
-        } else if (player.id === 2) {
+        }
+    
+
+    if (positionChanged) {
+        save();
+    }
+
+ else if (player.id === 2) {
             // Player 2 controls
             if (event.key === "w" && player.y > 0) {
                 player.y -= player.speed;
+                positionChanged = true;
             } else if (event.key === "s" && player.y < canvas.height - player.height) {
                 player.y += player.speed;
+                positionChanged = true;
             } else if (event.key === "a" && player.x > 0) {
                 player.x -= player.speed;
+                positionChanged = true;
             } else if (event.key === "d" && player.x < canvas.width - player.width) {
                 player.x += player.speed;
+                positionChanged = true;
             } else if (event.key === "Enter" && gameActive) {
                 // Enter key to shoot for Player 2 (opposite direction)
                 player.bullets.push({ x: player.x - 5, y: player.y + player.height / 2, direction: -1 });
             }
              console.log(`Player 2 position: x=${player.x}, y=${player.y}`);
         }
-    });
+        if (positionChanged) {
+            save();
+        }
+  });
+  
 });
 
 function drawPlayer(player) {
