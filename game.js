@@ -119,7 +119,7 @@ document.addEventListener("keydown", function (event) {
              console.log(`Player 2 position: x=${player.x}, y=${player.y}`);
         }
         if (positionChanged) {
-            save();
+            get();
         }
   });
   
