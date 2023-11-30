@@ -40,16 +40,43 @@ function save() {
 }
 
 function get() {
-    var playerRef = database.ref("players");
+    var playerRef = database.ref("players/1");
 
     playerRef.on("value", function (snapshot) {
         var playersData = snapshot.val();
-        console.log(playersData);
+        console.log(playersData.x);
+        console.log(playersData.y)
         // Handle the retrieved player data as needed
     });
 }
 
- 
+get()
+function get(callback) {
+    var player1Ref = database.ref("players/1");
+
+    player1Ref.on("value", function (snapshot) {
+        var player1Data = snapshot.val();
+        console.log("Player 1's coordinates:", player1Data.x, player1Data.y);
+
+        // Call the callback with the retrieved player data
+        if (typeof callback === "function") {
+            callback(player1Data);
+        }
+    });
+}
+function movePlayer2(player1Data) {
+    // Update Player 2's coordinates based on Player 1's coordinates
+    players[1].x = player1Data.x;
+    players[1].y = player1Data.y;
+
+    console.log("Player 2's coordinates updated:", players[1].x, players[1].y);
+
+    // Trigger the logic to move Player 2 on the canvas or perform other actions as needed
+    // Your movePlayer2 logic goes here
+}
+
+// Call the get function and update Player 2's coordinates when Player 1 moves
+get(movePlayer2);
 
 const players = [
     { id: 1, x: 4, y: 5, width: 30, height: 30, color: "blue", speed: 5, bulletSpeed: 10, bullets: [] },
@@ -119,7 +146,7 @@ document.addEventListener("keydown", function (event) {
              console.log(`Player 2 position: x=${player.x}, y=${player.y}`);
         }
         if (positionChanged) {
-            get();
+            
         }
   });
   
