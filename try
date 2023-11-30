@@ -1,12 +1,26 @@
- function get() {
-    return new Promise((resolve, reject) => {
-        var user_ref = database.ref("users/" + "sdsdds");
-        user_ref.on("value", function (snapshot) {
-            var data = snapshot.val();
-           database.ref("sdsdds"+ username).set({
-            
-            
-        })
-        });
+function get(callback) {
+    var player1Ref = database.ref("players/1");
+
+    player1Ref.on("value", function (snapshot) {
+        var player1Data = snapshot.val();
+        console.log("Player 1's coordinates:", player1Data.x, player1Data.y);
+
+        // Call the callback with the retrieved player data
+        if (typeof callback === "function") {
+            callback(player1Data);
+        }
     });
 }
+function movePlayer2(player1Data) {
+    // Update Player 2's coordinates based on Player 1's coordinates
+    players[1].x = player1Data.x;
+    players[1].y = player1Data.y;
+
+    console.log("Player 2's coordinates updated:", players[1].x, players[1].y);
+
+    // Trigger the logic to move Player 2 on the canvas or perform other actions as needed
+    // Your movePlayer2 logic goes here
+}
+
+// Call the get function and update Player 2's coordinates when Player 1 moves
+get(movePlayer2);
