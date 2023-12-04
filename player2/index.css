@@ -1,0 +1,53 @@
+/* Basic CSS Reset */
+body, h1, h2, p, ul, li, button {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+.game-container {
+  max-width: 800px;
+  margin: 20px auto;
+  position: relative;
+}
+
+#gameCanvas {
+  border: 2px solid #333;
+  display: block;
+  margin: 0 auto;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.player-controls {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  width: 45%;
+}
+
+button#restartBtn {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button#restartBtn:hover {
+  background-color: #45a049;
+}
