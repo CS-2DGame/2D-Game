@@ -14,6 +14,6 @@ we have to make it online 2 players on 2 laptops over internet
 
 #Diection fix 
 in game.js file line 121 in function ```
-    document.addEventListener("keydown", function (event) {```` i have made changes to change direction of bullet
+    document.addEventListener("keydown", function (event) {``` i have made changes to change direction of bullet
     `players[1].bullets.push({ x: players[1].x + players[1].width , y: players[1].y + players[1].height / 2, direction: -1});` to `players[1].bullets.push({ x: players[1].x + players[1].width , y: players[1].y + players[1].height / 2, direction: 1});`
 
