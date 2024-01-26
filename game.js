@@ -1,86 +1,24 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-var firebaseConfig = {
-    apiKey: "AIzaSyBzjcMqWZGbxv6BnXNAkJJtwYCezvDKU7I",
-    authDomain: "stone-58408.firebaseapp.com",
-    databaseURL: "https://stone-58408-default-rtdb.firebaseio.com",
-    projectId: "stone-58408",
-    storageBucket: "stone-58408.appspot.com",
-    messagingSenderId: "34073462745",
-    appId: "1:34073462745:web:ae8015931df3e5b6c7fbc8",
-    measurementId: "G-491Y00XCN5"
+const firebaseConfig = {
+    apiKey: "AIzaSyDshdHOODBKR6sMZRNqFtVRfUOzAPHZVgM",
+    authDomain: "cs2d-a14b7.firebaseapp.com",
+    projectId: "cs2d-a14b7",
+    storageBucket: "cs2d-a14b7.appspot.com",
+    messagingSenderId: "530961865099",
+    appId: "1:530961865099:web:1843772f205f5bcb2cb78e",
+    measurementId: "G-335M4CSBJR"
   };
-  
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   
   // Set database variable
   var database = firebase.database();
-
-  function saveToFirebase(player) {
-    return new Promise((resolve, reject) => {
-        // Assuming each player has a unique ID
-        var playerRef = database.ref("players/" + player.id);
-
-        playerRef.set({ x: player.x, y: player.y }, (error) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve("Player data saved to Firebase successfully!");
-            }
-        });
-    });
-}
-
-function save() {
-    const savePromises = players.map(player => saveToFirebase(player));
-
-
-}
-
-function get() {
-    var playerRef = database.ref("players/1");
-
-    playerRef.on("value", function (snapshot) {
-        var playersData = snapshot.val();
-        console.log(playersData.x);
-        console.log(playersData.y)
-        // Handle the retrieved player data as needed
-    });
-}
-
-get()
-function get(callback) {
-    var player1Ref = database.ref("players/1");
-
-    player1Ref.on("value", function (snapshot) {
-        var player1Data = snapshot.val();
-        console.log("Player 1's coordinates:", player1Data.x, player1Data.y);
-
-        // Call the callback with the retrieved player data
-        if (typeof callback === "function") {
-            callback(player1Data);
-        }
-    });
-}
-function movePlayer2(player1Data) {
-    // Update Player 2's coordinates based on Player 1's coordinates
-    players[1].x = player1Data.x;
-    players[1].y = player1Data.y;
-
-    console.log("Player 2's coordinates updated:", players[1].x, players[1].y);
-
-    // Trigger the logic to move Player 2 on the canvas or perform other actions as needed
-    // Your movePlayer2 logic goes here
-}
-
-// Call the get function and update Player 2's coordinates when Player 1 moves
-get(movePlayer2);
-
-const players = [
-    { id: 1, x: 4, y: 5, width: 30, height: 30, color: "blue", speed: 5, bulletSpeed: 10, bullets: [] },
-    { id: 2, x: 695, y: 465, width: 30, height: 30, color: "red", speed: 5, bulletSpeed: 10, bullets: [] },
+  
+  const players = [
+    { id: 0, x: 4, y: 5, width: 30, height: 30, color: "blue", speed: 5, bulletSpeed: 10, bullets: [] },
+    { id: 1, x: 695, y: 465, width: 30, height: 30, color: "red", speed: 5, bulletSpeed: 10, bullets: [] },
 ];
 
 const obstacles = [
@@ -92,65 +30,111 @@ const obstacles = [
     { x: canvas.width / 2 - 50, y: 2 * (canvas.height / 3) - 20, width: 100, height: 20 },
 ];
 
-let gameActive = true;
-document.addEventListener("keydown", function (event) {
-    let positionChanged = false;
+function saveToFirebase(player) {
+    return new Promise((resolve, reject) => {
+        var playerRef = database.ref("players/" + player.id);
 
-    players.forEach(player => {
-        if (player.id === 1) {
-            // Player 1 controls
-            if (event.key === "ArrowUp" && player.y > 0) {
-                player.y -= player.speed;
+        playerRef.set({ x: player.x, y: player.y }, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(`Player ${player.id} data saved to Firebase successfully!`);
+            }
+        });
+    });
+}
+
+function save() {
+    const savePromises = players.map(player => saveToFirebase(player));
+    Promise.all(savePromises)
+        .then(results => {
+            console.log(results.join('\n'));
+        })
+        .catch(error => {
+            console.error("Error saving player data:", error);
+        });
+}
+
+function get(playerId, callback) {
+    var playerRef = database.ref("players/" + playerId);
+
+    playerRef.on("value", function (snapshot) {
+        var playerData = snapshot.val();
+        console.log(`Player ${playerId}'s coordinates:`, playerData.x, playerData.y);
+
+        if (typeof callback === "function") {
+            callback(playerData);
+        }
+    });
+}
+
+// Call the get function for both players
+get(0, movePlayer1); // Call movePlayer1 for Player 1 (ID: 1)
+get(1, movePlayer2); // Call movePlayer2 for Player 2 (ID: 2)
+
+function movePlayer1(player2Data) {
+    console.log("Received data for Player 2:", player2Data);
+    players[0].x = player2Data.x;
+    players[0].y = player2Data.y;
+
+    console.log("Player 1's coordinates updated:", players[1].x, players[1].y);
+}
+
+function movePlayer2(player1Data) {
+    console.log("Received data for Player 1:", player1Data);
+    players[1].x = player1Data.x;
+    players[1].y = player1Data.y;
+
+    console.log("Player 2's coordinates updated:", players[1].x, players[1].y);
+}
+
+
+
+
+
+
+let gameActive = true;
+// ... (previous code remains the same)
+
+function startPlayer2() {
+    get(1, movePlayer2);
+
+    document.addEventListener("keydown", function (event) {
+        // Player 2 controls
+        if (players[1].id === 1) {
+            let positionChanged = false;
+
+            if (event.key === "w" && players[1].y > 0) {
+                players[1].y -= players[1].speed;
                 positionChanged = true;
-            } else if (event.key === "ArrowDown" && player.y < canvas.height - player.height) {
-                player.y += player.speed;
+            } else if (event.key === "s" && players[1].y < canvas.height - players[1].height) {
+                players[1].y += players[1].speed;
                 positionChanged = true;
-            } else if (event.key === "ArrowLeft" && player.x > 0) {
-                player.x -= player.speed;
+            } else if (event.key === "a" && players[1].x > 0) {
+                players[1].x -= players[1].speed;
                 positionChanged = true;
-            } else if (event.key === "ArrowRight" && player.x < canvas.width - player.width) {
-                player.x += player.speed;
+            } else if (event.key === "d" && players[1].x < canvas.width - players[1].width) {
+                players[1].x += players[1].speed;
                 positionChanged = true;
             } else if (event.key === " " && gameActive) {
-                // Space bar to shoot for Player 1
-                player.bullets.push({ x: player.x + player.width, y: player.y + player.height / 2, direction: 1 });
+                // Enter key to shoot for Player 2
+                players[1].bullets.push({ x: players[1].x - 5, y: players[1].y + players[1].height / 2, direction: -1 });
+                save();  // Save the updated bullets to Firebase
             }
-            
-            console.clear(); 
-            console.log(`Player 1 position: x=${player.x}, y=${player.y}`);
-        }
-    
 
-    if (positionChanged) {
-        save();
-    }
-
- else if (player.id === 2) {
-            // Player 2 controls
-            if (event.key === "w" && player.y > 0) {
-                player.y -= player.speed;
-                positionChanged = true;
-            } else if (event.key === "s" && player.y < canvas.height - player.height) {
-                player.y += player.speed;
-                positionChanged = true;
-            } else if (event.key === "a" && player.x > 0) {
-                player.x -= player.speed;
-                positionChanged = true;
-            } else if (event.key === "d" && player.x < canvas.width - player.width) {
-                player.x += player.speed;
-                positionChanged = true;
-            } else if (event.key === "Enter" && gameActive) {
-                // Enter key to shoot for Player 2 (opposite direction)
-                player.bullets.push({ x: player.x - 5, y: player.y + player.height / 2, direction: -1 });
+            if (positionChanged) {
+                save();  // Save the updated position to Firebase
             }
-             console.log(`Player 2 position: x=${player.x}, y=${player.y}`);
+
+            console.clear();
+            console.log(`Player 2 position: x=${players[1].x}, y=${players[1].y}`);
         }
-        if (positionChanged) {
-            
-        }
-  });
-  
-});
+    });
+}
+
+// Call the startPlayer2 function to initiate Player 2 controls
+startPlayer2();
+
 
 function drawPlayer(player) {
     ctx.fillStyle = player.color;
